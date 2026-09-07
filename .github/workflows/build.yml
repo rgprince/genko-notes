@@ -40,12 +40,27 @@ jobs:
         run: chmod +x ./gradlew || true
       - name: Run unit tests
         run: gradle :app:testDebugUnitTest --stacktrace --no-daemon --warning-mode all
-      - name: Trace flagged transitive deps (F-Droid anti-feature audit)
+      - name: Tracker-free APK gate (F-Droid anti-feature guard)
         run: |
-          for C in releaseRuntimeClasspath debugRuntimeClasspath debugUnitTestRuntimeClasspath releaseUnitTestRuntimeClasspath; do
-            echo "===== $C ====="
-            gradle :app:dependencyInsight --dependency io.opencensus --configuration $C --no-daemon 2>&1 | grep -A 12 "io.opencensus\|No dependencies" | head -n 16
-          done
+          python3 - <<'PY'
+          import glob, sys, zipfile
+          BLOCK = ["io/opencensus", "crashlytics", "gms/ads", "facebook/ads",
+                   "amplitude", "segment/analytics", "mixpanel", "appsflyer"]
+          apk = sorted(glob.glob("app/build/outputs/apk/debug/*.apk"))[0]
+          print("scanning", apk)
+          z = zipfile.ZipFile(apk)
+          bad = set()
+          for n in z.namelist():
+              if n.endswith(".dex"):
+                  blob = z.read(n).lower()
+                  for b in BLOCK:
+                      if b.encode() in blob:
+                          bad.add((n, b))
+          if bad:
+              print("TRACKER STRINGS FOUND:", bad)
+              sys.exit(1)
+          print("clean — no tracker SDKs in shipped dex")
+          PY
       - name: Build with Gradle
         run: gradle assembleDebug --stacktrace --no-daemon --warning-mode all
       - name: Upload APK
