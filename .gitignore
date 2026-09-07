@@ -12,3 +12,6 @@ logcat_*.txt
 # Internal dev docs stay local, not for release.
 DEPENDENCY_TREE.md
 PROJECT_OVERVIEW.md
+
+# Local submission helper, not for release.
+IZZY_SUBMISSION.md

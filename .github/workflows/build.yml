@@ -41,7 +41,11 @@ jobs:
       - name: Run unit tests
         run: gradle :app:testDebugUnitTest --stacktrace --no-daemon --warning-mode all
       - name: Trace flagged transitive deps (F-Droid anti-feature audit)
-        run: gradle :app:dependencyInsight --dependency io.opencensus --configuration releaseRuntimeClasspath --no-daemon 2>&1 | tail -n 40
+        run: |
+          for C in releaseRuntimeClasspath debugRuntimeClasspath debugUnitTestRuntimeClasspath releaseUnitTestRuntimeClasspath; do
+            echo "===== $C ====="
+            gradle :app:dependencyInsight --dependency io.opencensus --configuration $C --no-daemon 2>&1 | grep -A 12 "io.opencensus\|No dependencies" | head -n 16
+          done
       - name: Build with Gradle
         run: gradle assembleDebug --stacktrace --no-daemon --warning-mode all
       - name: Upload APK
