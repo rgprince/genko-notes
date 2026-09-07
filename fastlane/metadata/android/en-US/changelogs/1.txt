@@ -1,0 +1,1 @@
+First release. Custom WYSIWYG editor, SHONEN/SHOJO packs, folders, widget, offline-first.
