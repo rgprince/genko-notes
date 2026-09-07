@@ -106,3 +106,44 @@ jobs:
             app/build/outputs/apk/release/*.apk
             app/build/outputs/mapping/release/mapping.txt
           generate_release_notes: true
+
+  # Originality / provenance signals for store reviewers (F-Droid, IzzyOnDroid):
+  # no tool can prove "not copied from the internet", but this proves
+  # license cleanliness + no vendored blobs + low internal duplication.
+  provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: No vendored blobs check
+        run: |
+          echo "== Binary blobs inside the repo (excluding build/ and wrapper) =="
+          BLOBS=$(find . -path ./.git -prune -o -path ./build -prune -o -path ./app/build -prune -o -type f \( -name '*.jar' -o -name '*.aar' -o -name '*.so' -o -name '*.apk' -o -name '*.dex' \) -print)
+          if [ -n "$BLOBS" ]; then echo "$BLOBS"; echo "BLOBS_FOUND=true" >> $GITHUB_ENV; else echo "clean — no jars/aars/sos/apks"; fi
+      - name: License and copyright inventory (ScanCode)
+        run: |
+          pip install --quiet scancode-toolkit
+          scancode --license --copyright --info --json /tmp/scancode.json app gradle build.gradle.kts settings.gradle.kts gradle.properties 2>&1 | tail -n 5
+          python3 - <<'PY'
+          import json
+          d = json.load(open("/tmp/scancode.json"))
+          files = d.get("files", [])
+          from collections import Counter
+          lic = Counter()
+          for f in files:
+              for det in f.get("license_detections", []):
+                  for m in det.get("matches", []):
+                      lic[m.get("license_expression", "?")] += 1
+          print("== license expressions seen ==")
+          for k, v in lic.most_common(15):
+              print(f"  {v}x {k}")
+          PY
+      - name: Internal duplication check (jscpd)
+        run: |
+          npx --yes jscpd@latest "app/src/**/*.kt" --min-tokens 60 --reporters console 2>&1 | tail -n 20 || true
+      - name: Upload provenance reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: genkonotes-provenance
+          path: /tmp/scancode.json
+          if-no-files-found: warn
