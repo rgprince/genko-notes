@@ -1,0 +1,14 @@
+.gradle/
+build/
+app/build/
+.idea/
+*.iml
+local.properties
+schemas/
+logcat_*.txt
+# Release signing never enters the repo (lives in GitHub Secrets).
+*.jks
+*.keystore
+# Internal dev docs stay local, not for release.
+DEPENDENCY_TREE.md
+PROJECT_OVERVIEW.md
