@@ -46,7 +46,7 @@ notes today, novels tomorrow.
 ## 👋 Features
 
 **WRITE LIKE IT'S PAPER**
-* True WYSIWYG — no `**` markdown symbols leaking into your text
+* True WYSIWYG — no `**` markdown symbols leaking into your text [working on this]
 * Bold / italic / underline / strike / code / marker wash / H1 / H2
 * Bullets, checklists, quotes
 * Undo / redo (100 steps), word count
@@ -70,9 +70,6 @@ notes today, novels tomorrow.
 * Notes stored on-device with MMKV, nothing leaves your phone
 * 48dp touch targets + TalkBack labels
 
-## 📢 Announcements
-
-* *2026-09-07:* Renamed NijiNotes → **Genko Notes** before release. Same app, better name.
 
 ## Install
 
