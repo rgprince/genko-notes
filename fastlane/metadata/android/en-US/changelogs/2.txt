@@ -1,0 +1,1 @@
+Build fix for F-Droid: no strict JDK toolchain demand. Same features as 1.0.

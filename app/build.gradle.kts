@@ -12,8 +12,8 @@ android {
         applicationId = "com.rgprince.genkonotes"
         minSdk = 24
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -90,5 +90,9 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain(17)
+    // Bytecode level only — no strict toolchain demand, so builders
+    // with a newer JDK (and no JDK 17 install, e.g. F-Droid) still work.
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }

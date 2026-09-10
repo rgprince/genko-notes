@@ -520,7 +520,7 @@ fun SettingsScreen(
         }
         item {
             PapierCard(modifier = Modifier.fillMaxWidth(), ghost = true) {
-                BodySnippetText(text = "Genko Notes v1.0 — ink on paper.")
+                BodySnippetText(text = "Genko Notes v1.0.1 — ink on paper.")
                 Spacer(modifier = Modifier.height(4.dp))
                 CaptionText(text = "Widget: 3 recent notes + quick capture.")
             }
