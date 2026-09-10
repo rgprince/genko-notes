@@ -40,13 +40,17 @@ jobs:
         run: chmod +x ./gradlew || true
       - name: Run unit tests
         run: gradle :app:testDebugUnitTest --stacktrace --no-daemon --warning-mode all
+      - name: Build with Gradle
+        run: gradle assembleDebug --stacktrace --no-daemon --warning-mode all
       - name: Tracker-free APK gate (F-Droid anti-feature guard)
         run: |
           python3 - <<'PY'
           import glob, sys, zipfile
           BLOCK = ["io/opencensus", "crashlytics", "gms/ads", "facebook/ads",
                    "amplitude", "segment/analytics", "mixpanel", "appsflyer"]
-          apk = sorted(glob.glob("app/build/outputs/apk/debug/*.apk"))[0]
+          apks = sorted(glob.glob("app/build/outputs/apk/debug/*.apk"))
+          assert apks, "no debug APK built"
+          apk = apks[0]
           print("scanning", apk)
           z = zipfile.ZipFile(apk)
           bad = set()
@@ -61,8 +65,6 @@ jobs:
               sys.exit(1)
           print("clean — no tracker SDKs in shipped dex")
           PY
-      - name: Build with Gradle
-        run: gradle assembleDebug --stacktrace --no-daemon --warning-mode all
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
