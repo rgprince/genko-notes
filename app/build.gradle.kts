@@ -12,8 +12,8 @@ android {
         applicationId = "com.rgprince.genkonotes"
         minSdk = 24
         targetSdk = 37
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 3
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -51,6 +51,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
+    }
+    dependenciesInfo {
+        // F-Droid flags the 'Dependency metadata' signing block,
+        // so leave it out of the APK entirely.
+        includeInApk = false
     }
     buildFeatures {
         compose = true
